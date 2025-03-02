@@ -1,0 +1,22 @@
+{
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/src/parameters_manager_ex",
+        "/opt/ros/humble/lib/python3.10/site-packages/",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/",
+        "/opt/ros/humble/lib/python3.10/site-packages/",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+
+    ],
+    "python.testing.pytestArgs": [
+        "src"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": false,
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages"
+    }
+}
