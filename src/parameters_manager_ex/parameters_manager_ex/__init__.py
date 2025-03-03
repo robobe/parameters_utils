@@ -7,13 +7,20 @@ import yaml
 import os
 
 TOPIC = "dump"
+LOCATION = "param_yaml_full_path"
 
 class ParameterManagerEx():
-    def __init__(self, node: Node, root=""):
+    """
+    Load and Save node parameter subset
+    Load from file that defined in `param_yaml_full_path`
+    """
+    def __init__(self, node: Node, root: str):
+        """
+        root: node name or any root element to search in subset parameter file
+        """
         self.node = node
-        self._data = None
         self.root = root
-        self.location = self.node.get_parameter("param_yaml_full_path").value
+        self.location = self.node.get_parameter(LOCATION).value
         self._load_parameters(root)
         
         self._init_service()
@@ -28,7 +35,6 @@ class ParameterManagerEx():
             data = yaml.safe_load(file)
 
         if root:
-            self.node.get_logger().error(f"root name ::: {root}")
             if root in data:
                 data = data[root]
             else:
@@ -36,7 +42,10 @@ class ParameterManagerEx():
                 data = None
             return data
             
-    def _load_parameters(self, root):
+    def _load_parameters(self, root: str):
+        """
+        update node parameters values from subset
+        """
         data = self._open_parameters(root)
         if not data:
             return
@@ -50,14 +59,20 @@ class ParameterManagerEx():
                                 self.save_tracking_parameters)
         
     def _create_node_handler(self, key, value):
-        self.node.get_logger().error(f"--- {key} -- {value}")
+        """
+        update node parameter value
+        """
         if self.node.has_parameter(key):
             #TODO: check if there beater way
             self.node.get_parameter(key)._value = value
         else:
-            self.node.declare_parameter(key, value)
+            # self.node.declare_parameter(key, value)
+            self.node.get_logger().warning(f"Parameter with name: {key} not exists in node")
         
     def traverse_yaml(self, data, parent_key="", handler=None):
+        """
+        recursive iterate the yaml file and update parameter for each leaf
+        """
         if isinstance(data, dict):
             for key, value in data.items():
                 new_key = f"{parent_key}.{key}" if parent_key else key
@@ -71,11 +86,18 @@ class ParameterManagerEx():
             handler(parent_key, data)
 
     def append_yaml_to_node(self, data):
+        """
+        iterate the yaml file and update node parameters
+        """
         self.traverse_yaml(data, handler=self._create_node_handler)
 
     def save_tracking_parameters(self, request: Trigger.Request, response: Trigger.Response):
+        """
+        Save subset with current values back to file
+        """
         #TODO: how to lock between process in python 
 
+        # open yaml subset 
         with open(self.location, "r") as file:
             data = yaml.safe_load(file)
 
@@ -83,13 +105,14 @@ class ParameterManagerEx():
         if self.root:
             if self.root in data:
                 node_part = data[self.root]
-
-        if not node_part:
-            response.success = False
-            response.message = f"root: {self.root} not found for saving"
-            return response
-        
-        self.get_tracking_parameters(node_part)
+            else:
+                response.success = False
+                response.message = f"root: {self.root} not found for saving"
+                return response
+        else:
+            node_part = data
+                
+        self.get_and_update_tracking_parameters(node_part)
 
         # TODO: add exception to logger
         with open(self.location, "w") as file:
@@ -98,7 +121,19 @@ class ParameterManagerEx():
         response.message = f"save parameters to {self.location} "
         return response
     
-    def get_tracking_parameters(self, data):
+    def get_and_update_tracking_parameters(self, data):
+        """
+        Get all params name the defined as subset params
+
+        item:
+            sub_item:
+                sub_sub_item:
+                    key: data
+
+        yaml_data[item][sub_item][sub_sub_item][key] = data
+        key_to_update: hole the key name
+        key_path: hold all the sub items until the key not included
+        """
         # holed all keys from yaml
         keys = []
         def handler(key, value):
@@ -106,16 +141,22 @@ class ParameterManagerEx():
 
         self.traverse_yaml(data, handler=handler)
 
-        # hold all param name to update
+        # for each param name in keys update yaml leaf value
         for key in keys:
+            #split parameter name by "."
             items = key.split(".")
+            # get key
             key_to_update = items[-1]
+            # get sub item path (the path to the key)
             key_path = items[:-1]
             source = data
+            # iterate over yaml until to key to update
+            # check example in method description
             for item in key_path:
                 source = source[item]
             
             try:
+                # update yaml data from parameter value
                 source[key_to_update] = self.node.get_parameter(key).value
             except Exception as err:
                 self.node.get_logger().error(f"Failed to update yaml key: {key_to_update} with param name; {key}")
