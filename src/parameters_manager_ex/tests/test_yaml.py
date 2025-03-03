@@ -81,7 +81,7 @@ def test_update(temp_yaml_file, ros_node: Node):
     ros_node.declare_parameter("param_not_to_dump", "failed if dump")
     ros_node.get_parameter("preset")._value = "high"
     ros_node.get_parameter("high.fps")._value = 20
-    ex.get_tracking_parameters(temp_yaml_file)
+    ex.get_and_update_tracking_parameters(temp_yaml_file)
 
     success = True
     if temp_yaml_file["preset"] != "high":
