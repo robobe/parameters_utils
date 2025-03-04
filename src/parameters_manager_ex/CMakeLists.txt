@@ -17,4 +17,7 @@ if(BUILD_TESTING)
   ament_add_pytest_test(test_parse_2_param tests/test_yaml.py)
 endif()
 
+if(DEFINED INCLUDE_CPACK)
+  include(${INCLUDE_CPACK})
+endif()
 ament_package()
