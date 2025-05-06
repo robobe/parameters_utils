@@ -7,15 +7,16 @@
 
 ## Demo
 - Example node that declare 5 parameters
-        - "parameter_one",
-        - "persist_int",
-        - "persist_str",
-        - "persist_bool"
+  - "parameter_one",
+  - "persist_int",
+  - "persist_str",
+  - "persist_bool"
 - Create persist file at location `param_yaml_full_path` with value `/tmp/persist_example_node.yaml`
 - Update `persist_int` parameter
 - Run dump service to save the value into persist file
 
 
+/tmp/persist_example_node.yaml:
 ```yaml title="/tmp/persist_example_node.yaml"
 /example_node:
     persist_int: 10
@@ -23,10 +24,11 @@
     persist_bool: false
 ```
 
-!!! note 
+[!TIP]
      persist file can contain multiple nodes persistence parameters
      each set has node name as root like `/example_node`
 
+example_node.py:
 ```python title="example_node.py"
 #!/usr/bin/env python3
 
@@ -72,6 +74,7 @@ if __name__ == '__main__':
 ### usage
 #### without node parameters file
 
+run example_node:
 ```bash title="run example_node"
 ros2 run parameters_manager_ex example_node.py
 #
@@ -81,6 +84,7 @@ ros2 run parameters_manager_ex example_node.py
 [INFO] [1746543774.001060469] [example_node]: persist_bool-->False
 ```
 
+parameter list:
 ```bash title="parameter list"
 ros2 param list
 #
@@ -151,6 +155,6 @@ ros2 run parameters_manager_ex example_node.py --ros-args --params-file example_
 [INFO] [1746546430.604869311] [example_node]: persist_bool-->False
 ```
 
-!!! note
+[!TIP]
     The data from the persist file override the param file values
      
