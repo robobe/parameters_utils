@@ -1,0 +1,7 @@
+example_node:
+  ros__parameters:
+    parameter_one: 42
+    param_yaml_full_path: /tmp/persist_example_node.yaml
+    persist_int: 0
+    persist_str: empty
+    persist_bool: true

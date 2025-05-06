@@ -7,12 +7,14 @@ import yaml
 import os
 
 TOPIC = "dump"
-LOCATION = "param_yaml_full_path"
+PARAM_PERSIST_LOCATION = "param_yaml_full_path"
 
 class ParameterManagerEx():
     """
     Load and Save node parameter subset
     Load from file that defined in `param_yaml_full_path`
+    Add Service that invoke save , the parameter save into file path declare at `param_yaml_full_path` 
+    The service name type Trigger and it's name build from the node name + "dump"
     """
     def __init__(self, node: Node, root: str):
         """
@@ -20,17 +22,26 @@ class ParameterManagerEx():
         """
         self.node = node
         self.root = root
-        self.location = self.node.get_parameter(LOCATION).value
+        self.location = self._init_parameter_persist_location()
         self._load_parameters(root)
         
         self._init_service()
 
-
+    def _init_parameter_persist_location(self):
+        if not self.node.has_parameter(PARAM_PERSIST_LOCATION):
+            raise Exception(f"{PARAM_PERSIST_LOCATION} not declare")
+        location = self.node.get_parameter(PARAM_PERSIST_LOCATION).value
+        if location is None:
+            raise Exception(f"{PARAM_PERSIST_LOCATION} not set")
+        
+        return location
+        
     def _open_parameters(self, root):
         if not os.path.exists(self.location):
             self.node.get_logger().error(f"Parameter file not found: {self.location}")
             return
         
+
         with open(self.location, "r") as file:
             data = yaml.safe_load(file)
 

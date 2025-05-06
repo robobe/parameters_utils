@@ -11,6 +11,14 @@ find_package(ament_cmake_python REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME})
 
+set(NODES
+  parameters_manager_ex/example_node.py
+)
+
+install(PROGRAMS
+    ${NODES}
+DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
