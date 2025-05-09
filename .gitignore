@@ -1,3 +1,7 @@
 build/
 log/
 install/
+**/.obj-aarch64-linux-gnu
+**/debian
+*.deb
+*.pyc
