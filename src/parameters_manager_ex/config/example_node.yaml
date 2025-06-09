@@ -1,0 +1,8 @@
+/example_node:
+  ros__parameters:
+    persist_int: 1
+    persist_bool: true
+    persist_str: "Hello"
+    low:
+      data1: 1
+      data2: 2

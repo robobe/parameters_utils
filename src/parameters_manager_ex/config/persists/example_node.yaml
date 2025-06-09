@@ -1,4 +1,6 @@
 /example_node:
-  persist_int: 41
-  persist_bool: False
-  persist_str: "Hello, World!"
+    persist_int: 41
+    persist_bool: false
+    persist_str: Hello, World!
+    low.data2: 200
+    data2: 22

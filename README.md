@@ -164,3 +164,4 @@ ros2 run parameters_manager_ex example_node.py --ros-args --params-file example_
 > [!TIP]
 > The data from the persist file override the param file values
      
+
