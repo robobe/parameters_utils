@@ -1,0 +1,4 @@
+/example_node:
+  persist_int: 41
+  persist_bool: False
+  persist_str: "Hello, World!"

@@ -20,6 +20,11 @@ install(PROGRAMS
 DESTINATION lib/${PROJECT_NAME}
 )
 
+install(
+  DIRECTORY config/
+  DESTINATION share/${PROJECT_NAME}/config
+)
+
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(test_parse_2_param tests/test_yaml.py)
