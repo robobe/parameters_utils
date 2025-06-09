@@ -131,8 +131,14 @@ class ParameterManagerEx():
                 return response
         else:
             node_part = data
-                
-        self.get_and_update_tracking_parameters(node_part)
+
+        try:        
+            self.get_and_update_tracking_parameters(node_part)
+        except Exception as err:
+            self.node.get_logger().error("str(err)")
+            response.success = False
+            response.message = str(err)
+            return response
 
         # TODO: add exception to logger
         with open(self.location, "w") as file:
@@ -173,6 +179,10 @@ class ParameterManagerEx():
             # iterate over yaml until to key to update
             # check example in method description
             for item in key_path:
+                if item not in source:
+                    self.node.get_logger().error(f"Key '{item}' not found in persist yaml data ")
+                    raise KeyError(f"Key {item} not found in persist yaml data")
+                
                 source = source[item]
             
             try:
