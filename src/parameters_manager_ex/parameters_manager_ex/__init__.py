@@ -34,6 +34,9 @@ class ParameterManagerEx():
         if location is None:
             raise Exception(f"{PARAM_PERSIST_LOCATION} not set")
         
+        if not os.access(location, os.W_OK):
+            self.node.get_logger().error(f"Parameter file not writeable: {location}")
+        
         return location
         
     def _open_parameters(self, root):
@@ -49,7 +52,7 @@ class ParameterManagerEx():
             if root in data:
                 data = data[root]
             else:
-                self.node.get_logger().warning(f"root {root} node found, parameters not update from this file" )
+                self.node.get_logger().warning(f"root `{root}` not found in persist yaml file, parameters not update from this file" )
                 data = None
             return data
             
@@ -107,6 +110,12 @@ class ParameterManagerEx():
         Save subset with current values back to file
         """
         #TODO: how to lock between process in python 
+        if not os.access(self.location, os.W_OK):
+            msg = f"Parameter file not writeable: {self.location}"
+            self.node.get_logger().error(msg)
+            response.success = False
+            response.message = msg
+            return response
 
         # open yaml subset 
         with open(self.location, "r") as file:
